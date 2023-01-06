@@ -1,0 +1,13 @@
+SOUNDS AND IMAGES
+-----------------
+
+Grass and ground images created by Kristen Dyrr (does not include rock image)
+All dog images and sounds created by Kristen Dyrr using sounds and images of Max the dog, provided by Erik Dyrr (@erikdyrr on Twitter)
+
+To use these images or sounds separately from the game, please give credit to Kristen Dyrr with a link to http://kristenhead.blogspot.com
+
+
+GAME SOURCE CODE
+----------------
+
+If you use it for your own games that's awesome, just please give us attribution by linking back to our site. Thanks!
