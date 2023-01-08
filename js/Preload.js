@@ -17,6 +17,7 @@ InfiniteScroller.Preload.prototype = {
     this.load.spritesheet('playerScratch', 'assets/images/dog_scratch.png', 120, 108, 10);
     this.load.spritesheet('playerDig', 'assets/images/dog_dig.png', 116, 108, 8);
     this.load.image('ground', 'assets/images/ground.jpg');
+    this.load.image('pared', 'assets/images/pared.png');
     this.load.image('grass', 'assets/images/grass.png');
     this.load.image('preloadbar2', 'assets/images/preloader-bar.jpg');
 

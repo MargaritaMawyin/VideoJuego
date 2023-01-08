@@ -1,7 +1,7 @@
 var InfiniteScroller = InfiniteScroller || {};
 
 InfiniteScroller.Game = function(){};
-
+var ground=0;
 InfiniteScroller.Game.prototype = {
   preload: function() {
       this.game.time.advancedTiming = true;
@@ -11,9 +11,33 @@ InfiniteScroller.Game.prototype = {
     
     //set up background and ground layer
     this.game.world.setBounds(0, 0, 5596, this.game.height);
-    this.ground = this.add.tileSprite(0,this.game.height-70,this.game.world.width,70,'ground');
+    //this.ground = this.add.tileSprite(0,this.game.height-70,this.game.world.width,70,'pared');
     this.preloadbar2 = this.add.tileSprite(0,0,5596,this.game.height,'preloadbar2');
-    
+   
+    var bloqueSuelo;
+		//atributos del juego
+		this.sizeBloque = 50;
+		this.nivelVelocidad = -200;
+		this.alturadude = 92;
+		this.probCliff = 0.4;
+		this.probVertical = 0.4;
+		this.probMoreVertical = 0.8;
+    //agregar el suelo
+    	
+		ground = this.game.add.group();
+		ground.enableBody = true;
+    for(var i=0; i<60; ++i){
+			x = i * this.sizeBloque;
+			y = this.game.height - this.sizeBloque;
+			bloqueSuelo = ground.create(x, y, 'pared');
+			bloqueSuelo.body.immovable = true;
+			bloqueSuelo.body.velocity.x = this.nivelVelocidad;
+      bloqueSuelo.body.allowGravity = false
+		}
+		this.lastFloor = bloqueSuelo;
+		this.lastCliff = false;
+		this.lastVertical = false;
+
 
     console.log(this.game)
     //create player and walk animation
@@ -30,18 +54,17 @@ InfiniteScroller.Game.prototype = {
     //but the toy mounds have to be above that to be seen, but behind the
     //ground so they barely stick up
     this.game.world.bringToTop(this.mounds);
-    this.game.world.bringToTop(this.ground);
+    this.game.world.bringToTop(ground);
 
     //enable physics on the player and ground
     this.game.physics.arcade.enable(this.player);
-    this.game.physics.arcade.enable(this.ground);
+    this.game.physics.arcade.enable(ground);
 
     //player gravity
-    this.player.body.gravity.y = 1250;
+    this.player.body.gravity.y = 1550;
     
     //so player can walk on ground
-    this.ground.body.immovable = true;
-    this.ground.body.allowGravity = false;
+   
 
     //properties when the player is digging, scratching and standing, so we can use in update()
     var playerDigImg = this.game.cache.getImage('playerDig');
@@ -105,7 +128,7 @@ InfiniteScroller.Game.prototype = {
   
   update: function() {
     //collision
-    this.game.physics.arcade.collide(this.player, this.ground, this.playerHit, null, this);
+    this.game.physics.arcade.collide(this.player, ground, this.playerHit, null, this);
     this.game.physics.arcade.collide(this.player, this.fleas, this.playerBit, null, this);
     this.game.physics.arcade.overlap(this.player, this.mounds, this.collect, this.checkDig, this);
     
@@ -127,9 +150,10 @@ InfiniteScroller.Game.prototype = {
         this.mounds.destroy();
         this.generateMounds();
         
+        
         //put everything back in the proper order
         this.game.world.bringToTop(this.mounds);
-        this.game.world.bringToTop(this.ground);
+        this.game.world.bringToTop(ground);
       }
       else if(this.player.x >= this.game.width) {
         this.wrapping = false;
@@ -152,6 +176,7 @@ InfiniteScroller.Game.prototype = {
         //wrapping, rather than going to the end of the screen first.
       this.game.world.wrap(this.player, -(this.game.width/2), false, true, false);
     }
+    this.generar_camino();
 
   },
   //show updated stats values
@@ -159,6 +184,31 @@ InfiniteScroller.Game.prototype = {
     this.pointsText.text = this.points;
     this.fleasText.text = this.maxScratches - this.scratches;
   },
+
+  generar_camino: function(){
+		var i, delta = 0;
+		for(i = 0; i < ground.length; i++) {
+			if(ground.getAt(i).body.x <= -this.sizeBloque) {
+				if(Math.random() < this.probCliff && !this.lastCliff && !this.lastVertical) {
+					delta = 1;
+					this.lastCliff = true;
+					this.lastVertical = false;
+				}
+				else if(Math.random() < this.probVertical && !this.lastCliff) {
+					this.lastCliff = false;
+					this.lastVertical = true;
+				}
+				else {
+					this.lastCliff = false;
+					this.lastVertical = false;
+				}
+
+				ground.getAt(i).body.x = this.lastFloor.body.x + this.sizeBloque + delta * this.sizeBloque * 1.5;
+				this.lastFloor = ground.getAt(i);
+				break;
+			}
+		}
+	},
   playerHit: function(player, blockedLayer) {
     if(player.body.touching.right) {
       //can add other functionality here for extra obstacles later
