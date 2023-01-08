@@ -26,7 +26,7 @@ InfiniteScroller.Game.prototype = {
     	
 		ground = this.game.add.group();
 		ground.enableBody = true;
-    for(var i=0; i<60; ++i){
+    for(var i=0; i<90; ++i){
 			x = i * this.sizeBloque;
 			y = this.game.height - this.sizeBloque;
 			bloqueSuelo = ground.create(x, y, 'pared');
