@@ -10,11 +10,10 @@ InfiniteScroller.Game.prototype = {
   create: function() {
     
     //set up background and ground layer
-    this.game.world.setBounds(0, 0, 5596, this.game.height);
+    this.game.world.setBounds(0, 0, 3500, this.game.height);
     //this.ground = this.add.tileSprite(0,this.game.height-70,this.game.world.width,70,'pared');
-    this.preloadbar2 = this.add.tileSprite(0,0,5596,this.game.height,'preloadbar2');
+    this.preloadbar2 = this.add.tileSprite(0,0,3500,this.game.height,'preloadbar2');
    
-    var bloqueSuelo;
 		//atributos del juego
 		this.sizeBloque = 50;
 		this.nivelVelocidad = -200;
@@ -23,10 +22,11 @@ InfiniteScroller.Game.prototype = {
 		this.probVertical = 0.4;
 		this.probMoreVertical = 0.8;
     //agregar el suelo
-    	
+    var bloqueSuelo;
+	
 		ground = this.game.add.group();
 		ground.enableBody = true;
-    for(var i=0; i<90; ++i){
+    for(var i=0; i<70; ++i){
 			x = i * this.sizeBloque;
 			y = this.game.height - this.sizeBloque;
 			bloqueSuelo = ground.create(x, y, 'pared');
@@ -61,7 +61,7 @@ InfiniteScroller.Game.prototype = {
     this.game.physics.arcade.enable(ground);
 
     //player gravity
-    this.player.body.gravity.y = 1550;
+    this.player.body.gravity.y = 1500;
     
     //so player can walk on ground
    
@@ -230,13 +230,23 @@ InfiniteScroller.Game.prototype = {
     //change sprite image
     this.player.loadTexture('playerScratch');
     this.player.animations.play('scratch', 10, true);
-    
+
     //play audio
     // this.whineSound.play();
     
     //wait a couple of seconds for the scratch animation to play before continuing
     this.stopped = true;
     this.player.body.velocity.x = 0;
+
+    for(i = 0; i < ground.length; i++) {
+				ground.getAt(i).body.velocity.x =0 ;
+			}
+      for(i = 0; i < this.fleas.length; i++) {
+				this.fleas.getAt(i).body.velocity.x =0 ;
+			}
+      for(i = 0; i < this.mounds.length; i++) {
+				this.mounds.getAt(i).body.velocity.x =0 ;
+			}
     this.game.time.events.add(Phaser.Timer.SECOND * 2, this.playerScratch, this);
   },
   //the player is collecting a toy from a mound
@@ -357,13 +367,31 @@ InfiniteScroller.Game.prototype = {
     //phaser's random number generator
     var numMounds = this.game.rnd.integerInRange(5, 10)
     var mound;
-
+    var puntos = new Array();
     for (var i = 0; i < numMounds; i++) {
       //add sprite within an area excluding the beginning and ending
       //  of the game world so items won't suddenly appear or disappear when wrapping
-      var x = this.game.rnd.integerInRange(this.game.width, this.game.world.width - this.game.width);
+      var cond = true;
+      var x ;
+      while(cond){
+        x = this.game.rnd.integerInRange(this.game.width, this.game.world.width - this.game.width);
+        var indice = puntos.indexOf(x);
+        if(indice !== -1){
+          cond = true;
+        }else{
+          puntos.push(x);
+          for (var y = 0; y < 50; y++) {
+            puntos.push(x+y);
+            puntos.push(x-y);
+
+          }
+          cond = false; 
+        }
+      }
+      console.log(puntos);
+
       mound = this.mounds.create(x, this.game.height-75, 'mound');
-      mound.body.velocity.x = 0;
+      mound.body.velocity.x = -200;
     }
 
   },
@@ -374,18 +402,32 @@ InfiniteScroller.Game.prototype = {
     this.fleas.enableBody = true;
 
     //phaser's random number generator
-    var numFleas = this.game.rnd.integerInRange(1, 10)//5-10
+    var numFleas = this.game.rnd.integerInRange(5, 10)//5-10
     var flea;
+    var puntos = new Array();
 
     for (var i = 0; i < numFleas; i++) {
       //add sprite within an area excluding the beginning and ending
       //  of the game world so items won't suddenly appear or disappear when wrapping
-      var x = this.game.rnd.integerInRange(this.game.width, this.game.world.width - this.game.width);
+      var cond = true;
+      var x ;
+      while(cond){
+        x = this.game.rnd.integerInRange(this.game.width, this.game.world.width - this.game.width);
+        var indice = puntos.indexOf(x);
+        if(indice !== -1){
+          cond = true;
+        }else{
+          puntos.push(x);
+          for (var y = 0; y < 50; y++) {
+            puntos.push(x+y);
+            puntos.push(x-y);
+          }
+          cond = false ;
+        }
+      }
       flea = this.fleas.create(x, this.game.height-315, 'flea');
-
       //physics properties
-      flea.body.velocity.x = this.game.rnd.integerInRange(-20, 0);
-      
+      flea.body.velocity.x = -200;
       flea.body.immovable = true;
       flea.body.collideWorldBounds = false;
     }
