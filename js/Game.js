@@ -134,12 +134,14 @@ InfiniteScroller.Game.prototype = {
     
     //only respond to keys and keep the speed if the player is alive
     //we also don't want to do anything if the player is stopped for scratching or digging
-    if(this.player.alive && !this.stopped) {
-      
+    if(this.player.alive && !this.stopped) {    
       this.player.body.velocity.x = 300;
-      
-      //We do a little math to determine whether the game world has wrapped around.
-      //If so, we want to destroy everything and regenerate, so the game will remain random
+
+      if(this.player.y >= this.game.height + this.sizeBloque) {
+				console.log("GAME OVER");
+				this.gameOver()
+			}
+
       if(!this.wrapping && this.player.x < this.game.width) {
         //Not used yet, but may be useful to know how many times we've wrapped
         this.wraps++;
@@ -158,6 +160,8 @@ InfiniteScroller.Game.prototype = {
       else if(this.player.x >= this.game.width) {
         this.wrapping = false;
       }
+      
+      
       cursors = this.input.keyboard.createCursorKeys();
       //take the appropriate action for swiping up or pressing up arrow on keyboard
       //we don't wait until the swipe is finished (this.swipe.isUp),
@@ -190,7 +194,7 @@ InfiniteScroller.Game.prototype = {
 		for(i = 0; i < ground.length; i++) {
 			if(ground.getAt(i).body.x <= -this.sizeBloque) {
 				if(Math.random() < this.probCliff && !this.lastCliff && !this.lastVertical) {
-					delta = 1;
+					delta = 2;
 					this.lastCliff = true;
 					this.lastVertical = false;
 				}
